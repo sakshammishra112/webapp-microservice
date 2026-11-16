@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="error-panel">
+  <p class="eyebrow">Something went wrong</p>
+  <h2>{{ title }}</h2>
+  <p>{{ message }}</p>
+  <a class="button" href="/products">Return to products</a>
+</section>
+{% endblock %}

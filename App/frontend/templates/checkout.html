@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="checkout-card">
+  <p class="eyebrow">Secure test checkout</p>
+  <h2>Confirm your order</h2>
+  <div class="balance-panel">
+    <span>Account balance</span>
+    <strong>${{ "%.2f"|format(customer.balance) }}</strong>
+  </div>
+  <p class="muted">Your order total will be calculated from the current catalog prices. The amount is deducted from your account when the order is confirmed.</p>
+  <form method="post" action="/checkout" onsubmit="return prepareCheckout()">
+    <input type="hidden" name="items" id="items-input">
+    <button type="submit">Confirm and pay</button>
+    <a class="button secondary" href="/cart">Back to cart</a>
+  </form>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function prepareCheckout() {
+    const items = JSON.parse(localStorage.getItem("ecommerce_cart") || "[]");
+    document.getElementById("items-input").value = JSON.stringify(items);
+    if (!items.length) {
+      window.location.href = "/cart";
+      return false;
+    }
+  }
+</script>
+{% endblock %}

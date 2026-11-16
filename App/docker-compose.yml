@@ -1,0 +1,90 @@
+x-database-url: &database-url
+  # Same driver and URL format as Azure SQL; only the server and credentials differ.
+  DATABASE_URL: mssql+pyodbc://sa:Ecommerce-dev-0nly@mssql:1433/ecommerce?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes
+
+services:
+  # Local stand-in for Azure SQL Database.
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: Ecommerce-dev-0nly
+      MSSQL_PID: Developer
+    # SQL Server is consumed by the application services over the internal
+    # Compose network, so it does not need to bind host port 1433.
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  # Azure SQL databases are created by Terraform; locally we create it here.
+  mssql-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    command: >
+      /opt/mssql-tools18/bin/sqlcmd -C -S mssql -U sa -P Ecommerce-dev-0nly -b
+      -Q "IF DB_ID('ecommerce') IS NULL CREATE DATABASE ecommerce"
+    depends_on:
+      mssql:
+        condition: service_healthy
+    restart: "no"
+
+  catalog:
+    build:
+      context: ./services/catalog
+    environment:
+      <<: *database-url
+    depends_on:
+      mssql-init:
+        condition: service_completed_successfully
+    # Catalog is accessed by the frontend and order services over the
+    # internal Compose network. It does not need a host port.
+
+  customer:
+    build:
+      context: ./services/customer
+    environment:
+      <<: *database-url
+    depends_on:
+      mssql-init:
+        condition: service_completed_successfully
+    # Customer is accessed by the frontend and order services over the
+    # internal Compose network. It does not need a host port.
+
+  order:
+    build:
+      context: ./services/order
+    environment:
+      <<: *database-url
+      CATALOG_SERVICE_URL: http://catalog:8001
+      CUSTOMER_SERVICE_URL: http://customer:8002
+    depends_on:
+      mssql-init:
+        condition: service_completed_successfully
+      catalog:
+        condition: service_started
+      customer:
+        condition: service_started
+    # Order is accessed by the frontend over the internal Compose network.
+    # Only the frontend needs to be reachable from the host.
+
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      SESSION_SECRET: change-me-in-key-vault
+      CATALOG_SERVICE_URL: http://catalog:8001
+      CUSTOMER_SERVICE_URL: http://customer:8002
+      ORDER_SERVICE_URL: http://order:8003
+    depends_on:
+      - catalog
+      - customer
+      - order
+    ports:
+      - "8000:8000"
+
+volumes:
+  mssql-data:

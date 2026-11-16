@@ -1,0 +1,4 @@
+-r services/catalog/requirements.txt
+-r services/order/requirements.txt
+-r frontend/requirements.txt
+pytest>=8.0,<9

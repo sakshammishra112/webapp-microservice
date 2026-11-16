@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="auth-card">
+  <p class="eyebrow">Start with $500</p>
+  <h2>Create your account</h2>
+  <p class="muted">Every new customer receives a fixed $500 demo balance.</p>
+  <form method="post" action="/register">
+    <label>Name <input name="name" required minlength="2" autocomplete="name"></label>
+    <label>Username <input name="username" required minlength="3" maxlength="80" autocomplete="username"></label>
+    <small class="muted">You can use a normal username or an email-style username.</small>
+    <label>Email <input type="email" name="email" required autocomplete="email"></label>
+    <label>Phone <input name="phone" autocomplete="tel"></label>
+    <label>Password <input type="password" name="password" required minlength="8" autocomplete="new-password"></label>
+    <input type="hidden" name="next_path" value="{{ next }}">
+    <button type="submit">Create account</button>
+  </form>
+  <p class="muted">Already registered? <a href="/login?next={{ next }}">Login</a>.</p>
+</section>
+{% endblock %}

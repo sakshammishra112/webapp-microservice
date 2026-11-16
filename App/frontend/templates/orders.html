@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="section-heading">
+  <div>
+    <p class="eyebrow">Your account</p>
+    <h2>My orders</h2>
+  </div>
+  <a href="/products">Continue shopping</a>
+</section>
+
+{% if orders %}
+  <div class="order-list">
+    {% for order in orders %}
+    <a class="order-row" href="/orders/{{ order.id }}">
+      <span><strong>Order #{{ order.id }}</strong><small>{{ order.status }}</small></span>
+      <span>${{ "%.2f"|format(order.total_amount) }}</span>
+      <span>{% if order.balance_after is not none %}Balance: ${{ "%.2f"|format(order.balance_after) }}{% else %}Balance unavailable{% endif %}</span>
+    </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <p>You have not placed any orders yet.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,8 @@
+[tool.pytest.ini_options]
+testpaths = [
+    "frontend/tests",
+    "services/catalog/tests",
+    "services/customer/tests",
+    "services/order/tests",
+]
+pythonpath = ["."]

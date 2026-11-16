@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title or "CloudCart" }} | CloudCart</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Python microservices demonstration</p>
+      <h1><a href="/products">CloudCart</a></h1>
+    </div>
+    <nav>
+      <a href="/products">Products</a>
+      <a href="/cart">Cart <span id="cart-count" class="badge">0</span></a>
+      {% if user %}
+        <a href="/account/orders">My orders</a>
+        <span class="account-label">Hi, {{ user.username }} · ${{ "%.2f"|format(user.balance) }}</span>
+        <a class="nav-button" href="/logout">Logout</a>
+      {% else %}
+        <a href="/login">Login</a>
+        <a class="nav-button" href="/register">Create account</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>CloudCart is a small AKS deployment and observability demonstration.</p>
+  </footer>
+  <script>
+    const cart = JSON.parse(localStorage.getItem("ecommerce_cart") || "[]");
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    const badge = document.getElementById("cart-count");
+    if (badge) badge.textContent = count;
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

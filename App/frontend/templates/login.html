@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="auth-card">
+  <p class="eyebrow">Welcome back</p>
+  <h2>Login to CloudCart</h2>
+  {% if error %}<p class="form-error">{{ error }}</p>{% endif %}
+  <form method="post" action="/login">
+    <label>Username <input name="username" required autocomplete="username"></label>
+    <label>Password <input type="password" name="password" required autocomplete="current-password"></label>
+    <input type="hidden" name="next_path" value="{{ next }}">
+    <button type="submit">Login</button>
+  </form>
+  <p class="muted">New here? <a href="/register?next={{ next }}">Create an account</a>.</p>
+</section>
+{% endblock %}

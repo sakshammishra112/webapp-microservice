@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="confirmation">
+  <p class="eyebrow">Checkout complete</p>
+  <h2>Order #{{ order.id }} confirmed</h2>
+  <p>Your test order has been accepted by the Order Service.</p>
+  <p class="price">${{ "%.2f"|format(order.total_amount) }}</p>
+  <p>Status: <strong>{{ order.status }}</strong></p>
+  {% if order.balance_after is not none %}<p>Remaining balance: <strong>${{ "%.2f"|format(order.balance_after) }}</strong></p>{% endif %}
+  <ul>
+    {% for item in order["items"] %}
+    <li>{{ item.quantity }} &times; {{ item.product_name }} — ${{ "%.2f"|format(item.unit_price * item.quantity) }}</li>
+    {% endfor %}
+  </ul>
+  <a class="button" href="/products">Continue shopping</a>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>localStorage.removeItem("ecommerce_cart");</script>
+{% endblock %}

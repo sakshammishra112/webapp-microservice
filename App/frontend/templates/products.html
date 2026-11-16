@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Simple commerce, observable by design</p>
+    <h2>Everything you need for the next deployment demo.</h2>
+    <p>Browse the catalog, add products to your cart, and place a test order through three Python microservices.</p>
+  </div>
+  <a class="button" href="/cart">View cart</a>
+</section>
+
+<section>
+  <div class="section-heading">
+    <h2>Featured products</h2>
+    <span>{{ products|length }} products</span>
+  </div>
+  <div class="product-grid">
+    {% for product in products %}
+    <article class="card">
+      <div class="product-image">{{ product.name[0] }}</div>
+      <p class="eyebrow">{{ product.category }}</p>
+      <h3><a href="/products/{{ product.id }}">{{ product.name }}</a></h3>
+      <p>{{ product.description }}</p>
+      <div class="card-footer">
+        <strong>${{ "%.2f"|format(product.price) }}</strong>
+        <button onclick='addToCart({{ product|tojson }})'>Add to cart</button>
+      </div>
+      <small>{{ product.stock_quantity }} in stock</small>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function addToCart(product) {
+    const cart = JSON.parse(localStorage.getItem("ecommerce_cart") || "[]");
+    const existing = cart.find(item => item.product_id === product.id);
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ product_id: product.id, name: product.name, price: product.price, quantity: 1 });
+    }
+    localStorage.setItem("ecommerce_cart", JSON.stringify(cart));
+    window.location.href = "/cart";
+  }
+</script>
+{% endblock %}

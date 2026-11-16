@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<a href="/products">&larr; Back to products</a>
+<section class="detail-layout">
+  <div class="product-image product-image-large">{{ product.name[0] }}</div>
+  <div>
+    <p class="eyebrow">{{ product.category }}</p>
+    <h2>{{ product.name }}</h2>
+    <p>{{ product.description }}</p>
+    <p class="price">${{ "%.2f"|format(product.price) }}</p>
+    <p>{{ product.stock_quantity }} available</p>
+    <button onclick='addToCart({{ product|tojson }})'>Add to cart</button>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function addToCart(product) {
+    const cart = JSON.parse(localStorage.getItem("ecommerce_cart") || "[]");
+    const existing = cart.find(item => item.product_id === product.id);
+    if (existing) existing.quantity += 1;
+    else cart.push({ product_id: product.id, name: product.name, price: product.price, quantity: 1 });
+    localStorage.setItem("ecommerce_cart", JSON.stringify(cart));
+    window.location.href = "/cart";
+  }
+</script>
+{% endblock %}
