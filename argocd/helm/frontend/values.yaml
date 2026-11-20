@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: blackjesusacr.azureacr.io/frontend
+  repository: blackjesusacr.azurecr.io/frontend
   tag: latest
   pullPolicy: IfNotPresent
 
