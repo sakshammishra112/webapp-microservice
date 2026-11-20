@@ -1,0 +1,35 @@
+replicaCount: 2
+
+image:
+  repository: app-frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+service:
+  port: 8000
+  targetPort: 8000
+
+config:
+  catalogServiceUrl: http://catalog:8001
+  customerServiceUrl: http://customer:8002
+  orderServiceUrl: http://order:8003
+
+sessionSecret: change-me-in-key-vault
+
+resources:
+  requests:
+    cpu: "0.2"
+    memory: 100Mi
+  limits:
+    cpu: "0.5"
+    memory: 300Mi
+
+probes:
+  liveness:
+    initialDelaySeconds: 15
+    periodSeconds: 20
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10

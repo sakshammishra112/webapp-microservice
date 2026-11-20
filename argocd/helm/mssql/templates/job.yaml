@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-init
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: init
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until /opt/mssql-tools18/bin/sqlcmd -C -S {{ .Release.Name }} -U sa -P "$MSSQL_SA_PASSWORD" -Q 'SELECT 1' -b -o /dev/null; do sleep 2; done
+              /opt/mssql-tools18/bin/sqlcmd -C -S {{ .Release.Name }} -U sa -P "$MSSQL_SA_PASSWORD" -b -Q "IF DB_ID('{{ .Values.database }}') IS NULL CREATE DATABASE {{ .Values.database }}"
+          env:
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secret
+                  key: MSSQL_SA_PASSWORD

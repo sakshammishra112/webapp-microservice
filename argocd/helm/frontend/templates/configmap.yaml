@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  CATALOG_SERVICE_URL: {{ .Values.config.catalogServiceUrl | quote }}
+  CUSTOMER_SERVICE_URL: {{ .Values.config.customerServiceUrl | quote }}
+  ORDER_SERVICE_URL: {{ .Values.config.orderServiceUrl | quote }}

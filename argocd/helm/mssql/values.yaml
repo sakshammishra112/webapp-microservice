@@ -1,0 +1,30 @@
+image:
+  repository: mcr.microsoft.com/mssql/server
+  tag: 2022-latest
+  pullPolicy: IfNotPresent
+
+saPassword: Ecommerce-dev-0nly
+database: ecommerce
+pid: Developer
+
+service:
+  port: 1433
+
+pvc:
+  size: 10Gi
+
+resources:
+  requests:
+    cpu: "1"
+    memory: 2Gi
+  limits:
+    cpu: "2"
+    memory: 4Gi
+
+probes:
+  liveness:
+    initialDelaySeconds: 30
+    periodSeconds: 20
+  readiness:
+    initialDelaySeconds: 10
+    periodSeconds: 10
