@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: app-catalog
+  repository: blackjesusacr.azureacr.io/catalog
   tag: latest
   pullPolicy: IfNotPresent
 
